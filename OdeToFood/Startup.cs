@@ -53,6 +53,10 @@ namespace OdeToFood
                 });
             }
 
+            // UseFileServer is comibnation of the two pieces of middleware below.
+            app.UseFileServer();
+            //app.UseDefaultFiles();
+            //app.UseStaticFiles();
 
             app.UseWelcomePage(new WelcomePageOptions
             {
@@ -61,7 +65,6 @@ namespace OdeToFood
 
             app.Run(async (context) =>
             {
-                throw new Exception("Something went wrong!!");
                 var message = greeter.GetGreeter();
                 await context.Response.WriteAsync(message);
             });
