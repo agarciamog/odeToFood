@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Routing;
+using OdeToFood.Services;
 
 namespace OdeToFood
 {
@@ -28,8 +30,10 @@ namespace OdeToFood
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddMvc();
             services.AddSingleton(Configuration);
             services.AddSingleton<IGreeter, Greeter>(); // Register service Greeter with services
+            services.AddScoped<IRestaurantData, InMemoryRestaurantData>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -53,23 +57,20 @@ namespace OdeToFood
                 });
             }
 
-            // UseFileServer is comibnation of the two pieces of middleware below.
             app.UseFileServer();
-            //app.UseDefaultFiles();
-            //app.UseStaticFiles();
 
-            app.UseWelcomePage(new WelcomePageOptions
-            {
-                Path = "/welcome"
-            });
+            app.UseMvc(ConfigureRoutes);
 
-            app.Run(async (context) =>
-            {
-                var message = greeter.GetGreeter();
-                await context.Response.WriteAsync(message);
-            });
+            app.Run(ctx => ctx.Response.WriteAsync("Not Found"));
+        }
 
-            
+        private void ConfigureRoutes(IRouteBuilder routeBuilder)
+        {
+            // /Home/Index
+
+            // Convention based routing
+            routeBuilder.MapRoute("Default",
+                "{controller=Home}/{action=Index}/{id?}");
         }
     }
 }
