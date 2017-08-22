@@ -41,16 +41,32 @@ namespace OdeToFood
         {
             loggerFactory.AddConsole();
 
-            if (env.IsDevelopment())
+            if (env.IsDevelopment()) // For env enviroment see OdeToFood > properties > debug > ASPNETCORE_ENVIRONMENT
             {
-                app.UseDeveloperExceptionPage();
+                app.UseDeveloperExceptionPage(); 
             }
+            else
+            {
+                app.UseExceptionHandler(new ExceptionHandlerOptions
+                {
+                    ExceptionHandler = context => context.Response.WriteAsync("Opps!")
+                });
+            }
+
+
+            app.UseWelcomePage(new WelcomePageOptions
+            {
+                Path = "/welcome"
+            });
 
             app.Run(async (context) =>
             {
+                throw new Exception("Something went wrong!!");
                 var message = greeter.GetGreeter();
                 await context.Response.WriteAsync(message);
             });
+
+            
         }
     }
 }
